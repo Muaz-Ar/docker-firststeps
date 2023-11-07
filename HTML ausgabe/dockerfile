@@ -1,0 +1,8 @@
+# Verwenden Sie ein offizielles Nginx-Image als Basis
+FROM nginx
+
+# Kopieren Sie die HTML-Datei in das Verzeichnis /usr/share/nginx/html im Container
+COPY index.html /usr/share/nginx/html/
+
+# Der Standard-Nginx-Port 80 wird verwendet
+
