@@ -1,23 +1,27 @@
-# Work with Bind Mounts means: If we change somting localy it will be change at the Homepage automaticly 
-# with Bind Mounts you can easily mount one of your local file system directory inside a container 
-# for thos we yous volumes 
---volume <local file system directory absolute path>:<container file system directory absolute path>:<read write access>
+# Performin Multi-Staged Builds 
+# in the dev mod we need the Hot-Reload-Function but not in the production Mode 
+# So to create an image where the application runs in production mode, you can take the following steps:
 
-# for oure case 
-docker container run \
-    --rm \
-    --publish 3000:3000 \
-    --name hello-dock-dev \
-    --volume $(pwd):/home/node/app \   #with volume pwd:... you say that the container can use all thinks in the pwd file 
-    hello-dock:dev1
+# 1. --> Use node as the base image and build the application.
+# 2. --> Install nginx inside the node image and use that to serve the static files.
 
-# but this ar not working we need anonym Volumes the syntax  
---volume <container file system directory absolute path>:<read write access>
-docker container run \
-    --rm \
-    --detach \
-    --publish 3000:3000 \
-    --name hello-dock-dev \
-    --volume $(pwd):/home/node/app \       #with volume pwd:... you say that the container can use all thinks in the pwd file
-    --volume /home/node/app/node_modules \ # now container gets information from node_modules
-    hello-dock:dev
+# now we Use node image as the base and build the application. Copy the files created using the node image to a nginx image.
+# Create the final image based on nginx and discard all node related stuff.
+
+FROM node:lts-alpine as builder  # The basic Image an as builder assigns a name to this stage so that it can be refferd to later on
+
+WORKDIR /app                
+
+COPY ./package.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+FROM nginx:stable-alpine        # Line 11 starts the second stage of the build using nginx:stable-alpine as the base image.
+
+EXPOSE 80
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+--docker image build --tag hello-dock:prod .
