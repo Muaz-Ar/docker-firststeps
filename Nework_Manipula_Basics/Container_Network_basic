@@ -1,0 +1,17 @@
+# In reality you work with more than one container for one projekt and you must be sure that they can comunicatat to each other 
+# let lok at a scebarui where you have a notes-api application powered by ExpressJs and a PostgreSQL database server running in to seperate containers 
+# how can we Connect them 
+# one way is to accessing the database server using exposed port but that dont will be work 
+
+# with docker network ls you will see the dockernetworks 
+# for default docker has 5 kinds of netwerk driver 
+
+# 1 bridge : The default networking driver in Docker. This can be used when multiple containers are running in standard mode and needs to communicate with each other.
+
+# 2 host : Removes the network isolation completely. Any container running under a host network is basically attached to the network of the host system.
+
+# 3 none - This driver disables networking for containers altogether. I haven't' found any use-case for this yet.
+
+# 4 overlay : This is used for connecting multiple Docker daemons across computers and is out of the scope of this article.
+
+# 5 macvlan : Allows assignment of MAC addresses to containers making them function like physical devices in a network.
